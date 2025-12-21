@@ -1,13 +1,17 @@
 .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 22px 48px;
+  padding: 12px 48px;
   background: linear-gradient(90deg, #000000, #0b0b0b);
-
+  z-index: 1000;
 }
 
-/* LEFT */
+
 .nav-left {
   display: flex;
   align-items: center;
@@ -15,7 +19,11 @@
 }
 
 .logo-icon {
-  font-size: 22px;
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 .logo-text {
@@ -62,4 +70,75 @@
 
 .get-started-btn:hover {
   background-color: #ff8c2b;
+}
+
+/* Responsive Design for Linux/Desktop */
+@media (max-width: 1200px) {
+  .navbar {
+    padding: 12px 32px;
+  }
+  
+  .nav-right {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    padding: 10px 24px;
+  }
+  
+  .logo-icon {
+    height: 38px;
+  }
+  
+  .nav-right {
+    gap: 12px;
+  }
+  
+  .login-btn {
+    font-size: 14px;
+  }
+  
+  .get-started-btn {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px 16px;
+  }
+  
+  .logo-icon {
+    height: 35px;
+  }
+  
+  .mode-btn {
+    font-size: 16px;
+  }
+  
+  .login-btn {
+    display: none;
+  }
+  
+  .nav-right {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 8px 12px;
+  }
+  
+  .logo-icon {
+    height: 30px;
+  }
+  
+  .get-started-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
 }
