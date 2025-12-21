@@ -1,8 +1,9 @@
 import React from 'react'
 import '../Styles/Navbar.css'
 import Logo from '../../Assets/Logo.jpg'
+import { MdLightMode, MdDarkMode } from 'react-icons/md'
 
-function Navbar() {
+function Navbar({ theme, toggleTheme }) {
   return (
     <nav className="navbar">
       {/* LEFT */}
@@ -12,7 +13,9 @@ function Navbar() {
 
       {/* RIGHT */}
       <div className="nav-right">
-        <button className="mode-btn">🌞/🌙</button>
+        <button className="mode-btn" onClick={toggleTheme} aria-label="Toggle theme">
+          {theme === 'dark' ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
+        </button>
         <button className="login-btn">Log In</button>
         <button className="get-started-btn">Get Started</button>
       </div>

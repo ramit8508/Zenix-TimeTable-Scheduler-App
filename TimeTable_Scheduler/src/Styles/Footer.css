@@ -1,0 +1,286 @@
+.footer-container {
+    background-color: var(--bg-footer);
+    padding: 60px 20px 20px;
+    border-top: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    gap: 40px;
+    padding-bottom: 40px;
+}
+
+.footer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.footer-brand {
+    color: #F97015;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.footer-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 300px;
+    transition: color 0.3s ease;
+}
+
+.footer-heading {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    transition: color 0.3s ease;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-links li a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+
+.footer-links li a:hover {
+    color: #F97015;
+}
+
+.footer-social {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+.social-icon {
+    color: var(--text-secondary);
+    background-color: var(--bg-tertiary);
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.social-icon:hover {
+    color: #F97015;
+    background-color: #2A1810;
+    border-color: #F97015;
+    transform: translateY(-3px);
+}
+
+.footer-bottom {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: 30px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.footer-copyright {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+/* Responsive Design for Desktop, Tablets (iPad), and Phones */
+
+/* iPad Pro and Large Tablets (Landscape) */
+@media screen and (max-width: 1400px) {
+    .footer-content {
+        max-width: 1200px;
+    }
+}
+
+/* Standard Desktop and iPad Pro (Portrait) */
+@media screen and (max-width: 1200px) {
+    .footer-container {
+        padding: 50px 20px 20px;
+    }
+    
+    .footer-content {
+        gap: 35px;
+    }
+}
+
+/* iPad Landscape (1024px) and Tablets */
+@media screen and (max-width: 1024px) {
+    .footer-content {
+        grid-template-columns: 1.5fr 1fr 1fr;
+        gap: 30px;
+    }
+    
+    .footer-section:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+/* iPad Portrait (768px) and Medium Tablets */
+@media screen and (max-width: 992px) {
+    .footer-container {
+        padding: 45px 18px 18px;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+    
+    .footer-section:first-child {
+        grid-column: 1 / -1;
+    }
+    
+    .footer-description {
+        max-width: 100%;
+    }
+}
+
+/* iPad Mini Portrait and Small Tablets */
+@media screen and (max-width: 834px) {
+    .footer-brand {
+        font-size: 1.4rem;
+    }
+    
+    .footer-heading {
+        font-size: 1.05rem;
+    }
+}
+
+/* Phones (Landscape) and Small Tablets */
+@media screen and (max-width: 768px) {
+    .footer-container {
+        padding: 40px 15px 15px;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 35px;
+        padding-bottom: 30px;
+    }
+    
+    .footer-section:first-child,
+    .footer-section:last-child {
+        grid-column: 1;
+    }
+    
+    .footer-brand {
+        font-size: 1.3rem;
+    }
+    
+    .footer-bottom {
+        padding-top: 25px;
+    }
+}
+
+/* Large Phones (iPhone Pro Max, Galaxy S series) */
+@media screen and (max-width: 640px) {
+    .footer-container {
+        padding: 38px 12px 12px;
+    }
+    
+    .footer-content {
+        gap: 30px;
+    }
+}
+
+/* Standard Phones (iPhone 14, Galaxy, etc.) */
+@media screen and (max-width: 576px) {
+    .footer-container {
+        padding: 35px 10px 10px;
+    }
+    
+    .footer-content {
+        gap: 28px;
+        padding-bottom: 25px;
+    }
+    
+    .footer-brand {
+        font-size: 1.25rem;
+    }
+    
+    .footer-description,
+    .footer-links li a {
+        font-size: 0.9rem;
+    }
+    
+    .footer-heading {
+        font-size: 1rem;
+    }
+    
+    .social-icon {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .footer-copyright {
+        font-size: 0.85rem;
+    }
+}
+
+/* Small Phones and Compact Displays */
+@media screen and (max-width: 480px) {
+    .footer-container {
+        padding: 30px 8px 8px;
+    }
+    
+    .footer-content {
+        gap: 25px;
+    }
+    
+    .footer-brand {
+        font-size: 1.2rem;
+    }
+    
+    .footer-description,
+    .footer-links li a {
+        font-size: 0.88rem;
+    }
+    
+    .social-icon {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Extra Small Phones */
+@media screen and (max-width: 375px) {
+    .footer-brand {
+        font-size: 1.15rem;
+    }
+    
+    .footer-description,
+    .footer-links li a {
+        font-size: 0.85rem;
+    }
+    
+    .footer-social {
+        gap: 12px;
+    }
+    
+    .social-icon {
+        width: 38px;
+        height: 38px;
+    }
+}

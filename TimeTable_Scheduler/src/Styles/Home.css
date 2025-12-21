@@ -4,8 +4,9 @@
     align-items: center;
     padding: 5px 100px;
     padding-top: 80px;
-    background-color: #0C0D0F;
+    background-color: var(--bg-primary);
     min-height: calc(100vh - 70px);
+    transition: background-color 0.3s ease;
 }
 
 .text-container{
@@ -36,13 +37,13 @@
 }
 
 .Home-heading{
-    color: white;
+    color: var(--text-primary);
     font-size: 56px;
     font-weight: 700;
     line-height: 1.2;
     margin: 0;
     width: fit-content;
-    
+    transition: color 0.3s ease;
 }
 
 .Home-heading .highlight{
@@ -50,10 +51,11 @@
 }
 
 .Home-para{
-    color: #9CA3AF;
+    color: var(--text-secondary);
     font-size: 18px;
     line-height: 1.6;
     margin: 0;
+    transition: color 0.3s ease;
 }
 
 .button-container{
@@ -86,15 +88,15 @@
 }
 
 .home-demo{
-    background-color: #2A2D35;
-    color: white;
+    background-color: var(--border-color);
+    color: var(--text-primary);
     border: none;
     padding: 14px 28px;
     border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
 }
 
 .home-demo:hover{

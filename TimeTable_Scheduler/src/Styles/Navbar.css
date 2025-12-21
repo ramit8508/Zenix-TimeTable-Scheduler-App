@@ -45,6 +45,17 @@
   color: white;
   font-size: 18px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.mode-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
 }
 
 /* Log In */
@@ -54,6 +65,11 @@
   color: white;
   font-size: 15px;
   cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.login-btn:hover {
+  color: #ff7a18;
 }
 
 /* Get Started */
@@ -66,10 +82,12 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .get-started-btn:hover {
   background-color: #ff8c2b;
+  transform: translateY(-2px);
 }
 
 /* Responsive Design for Linux/Desktop */
