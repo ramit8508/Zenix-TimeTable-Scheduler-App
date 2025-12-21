@@ -3,6 +3,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 5px 100px;
+    padding-top: 80px;
     background-color: #0C0D0F;
     min-height: calc(100vh - 70px);
 }

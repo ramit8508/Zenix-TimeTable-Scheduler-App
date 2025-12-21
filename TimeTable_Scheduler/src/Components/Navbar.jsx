@@ -1,13 +1,13 @@
 import React from 'react'
 import '../Styles/Navbar.css'
-import logo from '../../Assets/Logo.jpg'
+import Logo from '../../Assets/Logo.jpg'
 
 function Navbar() {
   return (
     <nav className="navbar">
       {/* LEFT */}
       <div className="nav-left">
-        <img src={logo} alt="ChronoZen Logo" className="logo-icon" />
+        <img src={Logo} alt="ChronoZen Logo" className="logo-icon" />
       </div>
 
       {/* RIGHT */}
