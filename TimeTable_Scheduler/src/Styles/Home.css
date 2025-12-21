@@ -41,6 +41,8 @@
     font-weight: 700;
     line-height: 1.2;
     margin: 0;
+    width: fit-content;
+    
 }
 
 .Home-heading .highlight{
