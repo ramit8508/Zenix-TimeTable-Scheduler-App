@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CiClock1 } from "react-icons/ci";
 import { IoIosArrowRoundBack } from "react-icons/io";
@@ -7,6 +7,19 @@ import "../Styles/Signup.css";
 
 export default function Signup({ theme, toggleTheme }) {
   const navigate = useNavigate();
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSignup = (e) => {
+    e.preventDefault();
+    if (fullName && email && password) {
+      // Store user info in localStorage
+      localStorage.setItem('user', JSON.stringify({ email, userName: fullName }))
+      navigate('/dashboard')
+    }
+  }
+
   return (
     <>
       <button className="back-button" onClick={() => navigate("/")}>
@@ -21,8 +34,8 @@ export default function Signup({ theme, toggleTheme }) {
           <CiClock1 className="signup-logo" />
           <h2 className="signup-heading">Create Account</h2>
           <p className="signup-para">Start your productivity journey</p>
-          <form className="signup-form">
-            <label htmlFor="email" className="signup-label">
+          <form className="signup-form" onSubmit={handleSignup}>
+            <label htmlFor="fullname" className="signup-label">
               Full Name
             </label>
             <input
@@ -30,6 +43,8 @@ export default function Signup({ theme, toggleTheme }) {
               id="fullname"
               className="signup-input"
               placeholder="Enter your full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               required
             />
             <label htmlFor="email" className="signup-label">
@@ -40,6 +55,8 @@ export default function Signup({ theme, toggleTheme }) {
               id="email"
               className="signup-input"
               placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
 
@@ -51,6 +68,8 @@ export default function Signup({ theme, toggleTheme }) {
               id="password"
               className="signup-input"
               placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
             <button type="submit" className="signup-button">
