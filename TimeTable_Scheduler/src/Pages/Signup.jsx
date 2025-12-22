@@ -2,15 +2,19 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { CiClock1 } from "react-icons/ci";
 import { IoIosArrowRoundBack } from "react-icons/io";
+import { MdLightMode, MdDarkMode } from 'react-icons/md'
 import "../Styles/Signup.css";
 
-export default function Signup() {
+export default function Signup({ theme, toggleTheme }) {
   const navigate = useNavigate();
   return (
     <>
       <button className="back-button" onClick={() => navigate("/")}>
         <IoIosArrowRoundBack className="logo-back" />
         Back
+      </button>
+      <button className="theme-toggle-btn" onClick={toggleTheme} aria-label="Toggle theme">
+        {theme === 'dark' ? <MdLightMode size={20} /> : <MdDarkMode size={20} />}
       </button>
       <div className="signup-page">
         <div className="signup-box">

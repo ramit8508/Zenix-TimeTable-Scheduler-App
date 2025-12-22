@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import StartingPage from './Pages/StartingPage'
 import Login from './Pages/Login'
 import Signup from './Pages/Signup'
+import DashBoard from './Pages/DashBoard'
 
 function App() {
   const [theme, setTheme] = useState('dark')
@@ -21,6 +22,7 @@ function App() {
         <Route path="/" element={<StartingPage theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/login" element={<Login theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/signup" element={<Signup theme={theme} toggleTheme={toggleTheme} />} />
+        <Route path="/dashboard" element={<DashBoard theme={theme} toggleTheme={toggleTheme} />} />
       </Routes>
     </Router>
   )
