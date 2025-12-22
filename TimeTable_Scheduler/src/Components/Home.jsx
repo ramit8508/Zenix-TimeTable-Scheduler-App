@@ -1,8 +1,12 @@
 import React from "react";
 import "../Styles/Home.css";
 import HomeImage from "../../Assets/Home-image.jpeg";
+import { useNavigate } from 'react-router-dom'
+
 
 function Home() {
+  const navigate = useNavigate()
+
   return (
     <>
       <div className="Home-container">
@@ -19,11 +23,11 @@ function Home() {
             timetables that adapt to your goals, priorities, and lifestyle.
           </p>
           <div className="button-container">
-            <button className="home-start">
+            <button className="home-start" onClick={() => navigate('/signup')}>
               Start Free Today
               <span className="arrow">→</span>
             </button>
-            <button className="home-demo">Log In</button>
+            <button className="home-demo" onClick={() => navigate('/login')}>Log In</button>
           </div>
           <div className="users-section">
             <div className="user-avatars">

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import StartingPage from './Pages/StartingPage'
-
+import Login from './Pages/Login'
+import Signup from './Pages/Signup'
 
 function App() {
   const [theme, setTheme] = useState('dark')
@@ -14,9 +16,13 @@ function App() {
   }
   
   return (
-    <>
-     <StartingPage theme={theme} toggleTheme={toggleTheme} />
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<StartingPage theme={theme} toggleTheme={toggleTheme} />} />
+        <Route path="/login" element={<Login theme={theme} toggleTheme={toggleTheme} />} />
+        <Route path="/signup" element={<Signup theme={theme} toggleTheme={toggleTheme} />} />
+      </Routes>
+    </Router>
   )
 }
 
