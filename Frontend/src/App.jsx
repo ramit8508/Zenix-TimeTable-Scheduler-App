@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
-import { ProtectedRoute } from './components/ProtectedRoute'
+import { ProtectedRoute } from './Components/ProtectedRoute'
 import StartingPage from './Pages/StartingPage'
 import Login from './Pages/Login'
 import Signup from './Pages/Signup'
