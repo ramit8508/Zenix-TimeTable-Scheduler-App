@@ -38,7 +38,7 @@ export default function NavBarForDash({ theme, toggleTheme }) {
     <nav className="navbar-dash">
       {/* LEFT */}
       <div className="nav-dash-left">
-        <img src={Logo} alt="Logo" className="logo" />
+        <img src={Logo} alt="Zenix - Timetable Scheduler" className="logo" />
       </div>
 
       {/* RIGHT */}

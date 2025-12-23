@@ -11,7 +11,7 @@ function Navbar({ theme, toggleTheme }) {
     <nav className="navbar">
       {/* LEFT */}
       <div className="nav-left">
-        <img src={Logo} alt="ChronoZen Logo" className="logo-icon" />
+        <img src={Logo} alt="Zenix - Timetable Scheduler" className="logo-icon" />
       </div>
 
       {/* RIGHT */}
