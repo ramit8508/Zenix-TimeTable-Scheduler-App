@@ -1,4 +1,5 @@
-const API_URL = '/api/tasks';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://zenix-timetable-scheduler-app.onrender.com/api';
+const API_URL = `${API_BASE_URL}/tasks`;
 
 // Get auth token from localStorage
 const getAuthToken = () => {

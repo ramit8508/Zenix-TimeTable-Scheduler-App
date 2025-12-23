@@ -1,5 +1,5 @@
 // API service for authentication
-const API_BASE_URL = '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://zenix-timetable-scheduler-app.onrender.com/api';
 
 export const authAPI = {
   // Signup
