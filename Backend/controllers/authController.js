@@ -13,12 +13,6 @@ const generateToken = (userId, role) => {
 // @access  Public
 exports.signup = async (req, res) => {
   try {
-    // Check if DB is connected
-    const mongoose = require('mongoose');
-    if (mongoose.connection.readyState !== 1) {
-      return res.status(503).json({ message: 'Database not connected. Please check MongoDB credentials.' });
-    }
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -32,35 +26,33 @@ exports.signup = async (req, res) => {
     }
 
     // Check if user already exists
-    let user = await User.findOne({ email });
-    if (user) {
+    const existingUser = User.findByEmail(email);
+    if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
     // Create new user
-    user = new User({
+    const user = User.create({
       name,
       email,
       password,
     });
 
-    await user.save();
-
-    const token = generateToken(user._id, user.role);
+    const token = generateToken(user.id, user.role);
 
     res.status(201).json({
       message: 'User registered successfully',
       token,
       user: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
       },
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Signup error:', error);
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 };
 
@@ -69,12 +61,6 @@ exports.signup = async (req, res) => {
 // @access  Public
 exports.login = async (req, res) => {
   try {
-    // Check if DB is connected
-    const mongoose = require('mongoose');
-    if (mongoose.connection.readyState !== 1) {
-      return res.status(503).json({ message: 'Database not connected. Please check MongoDB credentials.' });
-    }
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -83,7 +69,7 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     // Check for user
-    const user = await User.findOne({ email }).select('+password');
+    const user = User.findByEmail(email, true);
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -94,26 +80,29 @@ exports.login = async (req, res) => {
     }
 
     // Check password
-    const isMatch = await user.matchPassword(password);
+    const isMatch = await User.comparePassword(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = generateToken(user._id, user.role);
+    const token = generateToken(user.id, user.role);
+
+    // Remove password from response
+    delete user.password;
 
     res.json({
       message: 'Login successful',
       token,
       user: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
       },
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Login error:', error);
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 };
 
@@ -122,16 +111,21 @@ exports.login = async (req, res) => {
 // @access  Private
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.userId);
+    const user = User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
     res.json({
       user: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
       },
     });
   } catch (error) {
+    console.error('Get me error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

@@ -1,11 +1,56 @@
 {
   "name": "linux-timetable-backend",
   "version": "1.0.0",
-  "description": "Linux Timetable Application Backend",
-  "main": "index.js",
+  "description": "Linux Timetable Application Backend - Offline SQLite",
+  "main": "electron-main.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "electron": "electron .",
+    "electron:dev": "cross-env NODE_ENV=development electron .",
+    "electron:build": "electron-builder --linux",
+    "build": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.studentos.timetable",
+    "productName": "StudentOS Timetable",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/**/*",
+      "node_modules/sql.js/**/*",
+      "node_modules/bcryptjs/**/*",
+      "node_modules/cors/**/*",
+      "node_modules/dotenv/**/*",
+      "node_modules/express/**/*",
+      "node_modules/express-validator/**/*",
+      "node_modules/jsonwebtoken/**/*",
+      "!.env",
+      "!test-database.js",
+      "!**/*.md"
+    ],
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "Utility;Education;Office",
+      "synopsis": "Offline Timetable & Task Manager for StudentOS",
+      "description": "Complete offline timetable and task management application with SQLite database",
+      "desktop": {
+        "StartupWMClass": "studentos-timetable",
+        "Categories": "Utility;Education;Office",
+        "Keywords": "timetable;schedule;tasks;student;offline"
+      }
+    }
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -13,11 +58,13 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-validator": "^7.0.0",
-    "groq-sdk": "^0.37.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^9.0.2"
+    "sql.js": "^1.10.3"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
     "nodemon": "^3.0.2"
   }
 }

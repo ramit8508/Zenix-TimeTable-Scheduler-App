@@ -78,7 +78,7 @@ export default function AIPlanGenerator({ isOpen, onClose, activeTasks, onPlanGe
     
     try {
       const totalTasksToSchedule = activeTasks + formData.customTasks.length;
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://zenix-timetable-scheduler-app.onrender.com/api';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       
       const response = await fetch(`${API_BASE_URL}/ai/generate-plan`, {
         method: 'POST',

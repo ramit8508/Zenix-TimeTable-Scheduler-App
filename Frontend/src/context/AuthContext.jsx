@@ -13,14 +13,40 @@ export const AuthProvider = ({ children }) => {
 
   // Initialize auth state from localStorage
   useEffect(() => {
-    const storedToken = getToken();
-    const storedUser = getUser();
+    const validateToken = async () => {
+      const storedToken = getToken();
+      const storedUser = getUser();
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(storedUser);
-    }
-    setLoading(false);
+      if (storedToken && storedUser) {
+        try {
+          // Validate token with backend
+          const response = await fetch('http://localhost:5000/api/auth/me', {
+            headers: {
+              'Authorization': `Bearer ${storedToken}`
+            }
+          });
+          
+          if (response.ok) {
+            // Token is valid
+            setToken(storedToken);
+            setUser(storedUser);
+          } else {
+            // Token is invalid, clear it
+            console.log('Invalid token detected, clearing localStorage');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          }
+        } catch (error) {
+          // Network error or backend not ready, clear old token
+          console.log('Token validation failed, clearing localStorage');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        }
+      }
+      setLoading(false);
+    };
+    
+    validateToken();
   }, []);
 
   // Login function

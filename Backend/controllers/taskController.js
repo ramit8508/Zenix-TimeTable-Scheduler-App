@@ -6,7 +6,7 @@ exports.createTask = async (req, res) => {
     const { taskName, duration, priority, category, notes, date } = req.body;
     
     // Create task with userId from authenticated user
-    const task = await Task.create({
+    const task = Task.create({
       taskName,
       duration,
       priority,
@@ -34,7 +34,7 @@ exports.createTask = async (req, res) => {
 // Get all tasks for a user
 exports.getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({ userId: req.userId }).sort({ date: -1 });
+    const tasks = Task.findByUserId(req.userId);
 
     res.status(200).json({
       success: true,
@@ -56,13 +56,11 @@ exports.getTasksByDateRange = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     
-    const tasks = await Task.find({
-      userId: req.userId,
-      date: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
-      },
-    }).sort({ date: 1 });
+    const tasks = Task.findByDateRange(
+      req.userId,
+      new Date(startDate),
+      new Date(endDate)
+    );
 
     res.status(200).json({
       success: true,
@@ -82,19 +80,7 @@ exports.getTasksByDateRange = async (req, res) => {
 // Get today's tasks
 exports.getTodayTasks = async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const tasks = await Task.find({
-      userId: req.userId,
-      date: {
-        $gte: today,
-        $lt: tomorrow,
-      },
-    });
+    const tasks = Task.findTodayTasks(req.userId);
 
     res.status(200).json({
       success: true,
@@ -117,11 +103,7 @@ exports.updateTask = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    const task = await Task.findOneAndUpdate(
-      { _id: id, userId: req.userId },
-      updates,
-      { new: true, runValidators: true }
-    );
+    const task = Task.update(id, req.userId, updates);
 
     if (!task) {
       return res.status(404).json({
@@ -150,9 +132,9 @@ exports.deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const task = await Task.findOneAndDelete({ _id: id, userId: req.userId });
+    const deleted = Task.delete(id, req.userId);
 
-    if (!task) {
+    if (!deleted) {
       return res.status(404).json({
         success: false,
         message: 'Task not found',
@@ -176,49 +158,11 @@ exports.deleteTask = async (req, res) => {
 // Get task statistics
 exports.getTaskStats = async (req, res) => {
   try {
-    const userId = req.userId;
-    
-    // Total tasks
-    const totalTasks = await Task.countDocuments({ userId });
-    
-    // Completed tasks
-    const completedTasks = await Task.countDocuments({ userId, completed: true });
-    
-    // Today's tasks
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    const todayTasks = await Task.find({
-      userId,
-      date: { $gte: today, $lt: tomorrow },
-    });
-    
-    const todayTotal = todayTasks.length;
-    const todayCompleted = todayTasks.filter(task => task.completed).length;
-    
-    // Weekly hours
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay());
-    
-    const weekTasks = await Task.find({
-      userId,
-      date: { $gte: weekStart },
-    });
-    
-    const weeklyMinutes = weekTasks.reduce((sum, task) => sum + task.duration, 0);
-    const weeklyHours = Math.round(weeklyMinutes / 60);
+    const stats = Task.getStats(req.userId);
 
     res.status(200).json({
       success: true,
-      stats: {
-        totalTasks,
-        completedTasks,
-        todayTotal,
-        todayCompleted,
-        weeklyHours,
-      },
+      stats,
     });
   } catch (error) {
     console.error('Get task stats error:', error);

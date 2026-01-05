@@ -2,15 +2,21 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-const connectDB = require('./db/connection');
+const { initDB, startAutoSave } = require('./db/connection');
 const authRoutes = require('./routes/authRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 
 const app = express();
 
-// Connect to database
-connectDB();
+// Initialize SQLite database (async)
+initDB().then(() => {
+  startAutoSave();
+  console.log('✅ Auto-save enabled');
+}).catch(err => {
+  console.error('Failed to initialize database:', err);
+  process.exit(1);
+});
 
 // Middleware
 app.use(cors());
@@ -30,7 +36,7 @@ app.use('/api/ai', aiRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'Server is running' });
+  res.json({ status: 'Server is running', database: 'SQLite (Offline)', mode: 'Offline' });
 });
 
 // 404 handler
