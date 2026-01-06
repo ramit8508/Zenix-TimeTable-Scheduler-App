@@ -20,7 +20,12 @@ function AppContent() {
   }
 
   if (loading) {
-    return <div style={{ textAlign: 'center', padding: '50px' }}>Loading...</div>
+    return (
+      <div className="loading-screen">
+        <div className="loading-spinner"></div>
+        <div className="loading-text">Loading...</div>
+      </div>
+    )
   }
   
   return (

@@ -201,6 +201,13 @@
 .signup-button:active {
     transform: translateY(0);
 }
+.signup-button:disabled {
+    background-color: #FF8C42;
+    color: #FFFFFF;
+    cursor: not-allowed;
+    opacity: 0.9;
+    transform: none;
+}
 .signup-tologin{
     color: var(--signup-para-text);
     font-size: 14px;

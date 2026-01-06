@@ -199,6 +199,13 @@
 .login-button:active {
     transform: translateY(0);
 }
+.login-button:disabled {
+    background-color: #FF8C42;
+    color: #FFFFFF;
+    cursor: not-allowed;
+    opacity: 0.9;
+    transform: none;
+}
 .login-tosignup{
     color: var(--login-para-text);
     font-size: 14px;
