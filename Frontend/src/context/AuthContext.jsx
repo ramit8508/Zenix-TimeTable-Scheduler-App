@@ -18,8 +18,16 @@ export const AuthProvider = ({ children }) => {
       const storedUser = getUser();
 
       if (storedToken && storedUser) {
+        // If offline or token starts with 'offline_', accept it without validation
+        if (!navigator.onLine || storedToken.startsWith('offline_')) {
+          setToken(storedToken);
+          setUser(storedUser);
+          setLoading(false);
+          return;
+        }
+        
         try {
-          // Validate token with backend
+          // Validate token with backend only when online
           const response = await fetch('http://localhost:5000/api/auth/me', {
             headers: {
               'Authorization': `Bearer ${storedToken}`
@@ -31,16 +39,16 @@ export const AuthProvider = ({ children }) => {
             setToken(storedToken);
             setUser(storedUser);
           } else {
-            // Token is invalid, clear it
-            console.log('Invalid token detected, clearing localStorage');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            // Token is invalid, keep it for offline use
+            console.log('Token validation failed, using offline mode');
+            setToken(storedToken);
+            setUser(storedUser);
           }
         } catch (error) {
-          // Network error or backend not ready, clear old token
-          console.log('Token validation failed, clearing localStorage');
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          // Network error, use offline mode
+          console.log('Network error, using offline mode');
+          setToken(storedToken);
+          setUser(storedUser);
         }
       }
       setLoading(false);

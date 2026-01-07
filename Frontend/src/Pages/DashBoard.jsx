@@ -137,22 +137,41 @@ export default function DashBoard({ theme, toggleTheme }) {
   const fetchTaskStats = async () => {
     try {
       const response = await getTaskStats()
-      if (response.success) {
-        setTaskStats(response.stats)
+      // Handle both online (response.success) and offline (response.offline) formats
+      if (response.success || response.offline) {
+        const stats = response.stats
+        // Map stats to expected format
+        setTaskStats({
+          totalTasks: stats.total || stats.totalTasks || 0,
+          completedTasks: stats.completed || stats.completedTasks || 0,
+          todayTotal: stats.todayTotal || 0,
+          todayCompleted: stats.todayCompleted || 0,
+          weeklyHours: stats.weeklyHours || 0,
+        })
       }
     } catch (error) {
       console.error('Error fetching task stats:', error)
+      // Set default stats on error
+      setTaskStats({
+        totalTasks: 0,
+        completedTasks: 0,
+        todayTotal: 0,
+        todayCompleted: 0,
+        weeklyHours: 0,
+      })
     }
   }
 
   const fetchAllTasks = async () => {
     try {
       const response = await getAllTasks()
-      if (response.success) {
-        setAllTasks(response.tasks)
+      // Handle both online (response.success) and offline (response.offline) formats
+      if (response.success || response.offline) {
+        setAllTasks(response.tasks || [])
       }
     } catch (error) {
       console.error('Error fetching all tasks:', error)
+      setAllTasks([])
     }
   }
 
@@ -164,11 +183,13 @@ export default function DashBoard({ theme, toggleTheme }) {
       endDate.setHours(23, 59, 59, 999)
 
       const response = await getTasksByDateRange(startDate, endDate)
-      if (response.success) {
-        setWeeklyTasks(response.tasks)
+      // Handle both online (response.success) and offline (response.offline) formats
+      if (response.success || response.offline) {
+        setWeeklyTasks(response.tasks || [])
       }
     } catch (error) {
       console.error('Error fetching weekly tasks:', error)
+      setWeeklyTasks([])
     }
   }
 
@@ -182,7 +203,8 @@ export default function DashBoard({ theme, toggleTheme }) {
 
     try {
       const response = await createTask(taskForm)
-      if (response.success) {
+      // Handle both online (response.success) and offline (response.offline) formats
+      if (response.success || response.offline || response.task) {
         alert('Task created successfully!')
         setShowTaskModal(false)
         setTaskForm({
@@ -206,7 +228,8 @@ export default function DashBoard({ theme, toggleTheme }) {
   const handleToggleComplete = async (taskId, currentStatus) => {
     try {
       const response = await updateTask(taskId, { completed: !currentStatus })
-      if (response.success) {
+      // Handle both online (response.success) and offline (response.offline) formats
+      if (response.success || response.offline || response.task) {
         // Refresh data
         fetchTaskStats()
         fetchWeeklyTasks()
@@ -224,7 +247,8 @@ export default function DashBoard({ theme, toggleTheme }) {
 
     try {
       const response = await deleteTask(taskId)
-      if (response.success) {
+      // Handle both online (response.success) and offline (response.offline) formats
+      if (response.success || response.offline || response.message) {
         alert('Task deleted successfully!')
         // Refresh data
         fetchTaskStats()

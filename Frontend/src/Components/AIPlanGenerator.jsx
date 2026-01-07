@@ -80,6 +80,13 @@ export default function AIPlanGenerator({ isOpen, onClose, activeTasks, onPlanGe
       const totalTasksToSchedule = activeTasks + formData.customTasks.length;
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       
+      // Check if offline
+      if (!navigator.onLine) {
+        alert('AI Plan Generator requires internet connection. Please connect to the internet to use this feature.');
+        setIsGenerating(false);
+        return;
+      }
+      
       const response = await fetch(`${API_BASE_URL}/ai/generate-plan`, {
         method: 'POST',
         headers: {
@@ -102,7 +109,7 @@ export default function AIPlanGenerator({ isOpen, onClose, activeTasks, onPlanGe
       }
     } catch (error) {
       console.error('Error generating plan:', error);
-      alert('Error generating plan. Please try again.');
+      alert('Error generating plan. Please check your internet connection and try again.');
     } finally {
       setIsGenerating(false);
     }

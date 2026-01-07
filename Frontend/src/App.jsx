@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ProtectedRoute } from './Components/ProtectedRoute'
+import OfflineIndicator from './Components/OfflineIndicator'
 import StartingPage from './Pages/StartingPage'
 import Login from './Pages/Login'
 import Signup from './Pages/Signup'
@@ -51,6 +52,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
+        <OfflineIndicator />
         <AppContent />
       </AuthProvider>
     </Router>
