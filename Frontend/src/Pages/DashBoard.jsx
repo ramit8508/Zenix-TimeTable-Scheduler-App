@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react'
 import NavBarForDash from '../Components/NavBarForDash'
 import AIPlanGenerator from '../Components/AIPlanGenerator'
 import { useAuth } from '../context/AuthContext'
@@ -47,23 +47,22 @@ export default function DashBoard({ theme, toggleTheme }) {
 
   // Desktop notification system for Electron app - hourly task reminders
   useEffect(() => {
-    // Check if running in Electron or browser
+    // Only run if there are tasks
+    if (allTasks.length === 0) return
+
     const isElectron = window.electron !== undefined
     
-    // Request notification permission (for browser fallback)
     if (!isElectron && 'Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission()
     }
 
-    // Send desktop notification
     const sendNotification = (title, body, tasks = []) => {
       if (isElectron && window.electron?.sendNotification) {
-        // Use Electron's native notification API
         window.electron.sendNotification({
           title,
           body,
           icon: '/vite.svg',
-          tasks: tasks.map(t => ({
+          tasks: tasks.slice(0, 3).map(t => ({
             name: t.taskName,
             priority: t.priority,
             duration: t.duration
@@ -71,7 +70,6 @@ export default function DashBoard({ theme, toggleTheme }) {
           timestamp: new Date().toISOString()
         })
       } else if ('Notification' in window && Notification.permission === 'granted') {
-        // Fallback to browser notification
         new Notification(title, {
           body,
           icon: '/vite.svg',
@@ -84,9 +82,7 @@ export default function DashBoard({ theme, toggleTheme }) {
       }
     }
 
-    // Check for incomplete tasks and send notification
     const checkIncompleteTasks = () => {
-      // Get today's incomplete tasks
       const today = new Date()
       today.setHours(0, 0, 0, 0)
       const tomorrow = new Date(today)
@@ -98,49 +94,35 @@ export default function DashBoard({ theme, toggleTheme }) {
       })
       
       if (todayIncompleteTasks.length > 0) {
-        // Create notification body with task names and priorities
-        let notificationBody = `You have ${todayIncompleteTasks.length} incomplete task${todayIncompleteTasks.length > 1 ? 's' : ''} today:\n\n`
+        let notificationBody = `You have ${todayIncompleteTasks.length} incomplete task${todayIncompleteTasks.length > 1 ? 's' : ''} today:\\n\\n`
         
         todayIncompleteTasks.slice(0, 3).forEach((task, index) => {
-          notificationBody += `${index + 1}. ${task.taskName} [${task.priority}] - ${task.duration}min\n`
+          notificationBody += `${index + 1}. ${task.taskName} [${task.priority}] - ${task.duration}min\\n`
         })
         
         if (todayIncompleteTasks.length > 3) {
-          notificationBody += `\n+${todayIncompleteTasks.length - 3} more tasks...`
+          notificationBody += `\\n+${todayIncompleteTasks.length - 3} more tasks...`
         }
 
-        sendNotification(
-          '⏰ Zenix Task Reminder',
-          notificationBody,
-          todayIncompleteTasks
-        )
+        sendNotification('⏰ Zenix Task Reminder', notificationBody, todayIncompleteTasks)
       }
     }
 
-    // Initial check after 5 seconds
-    const initialTimeout = setTimeout(() => {
-      checkIncompleteTasks()
-    }, 5000)
+    // Delay initial check to 10 seconds to avoid blocking on load
+    const initialTimeout = setTimeout(checkIncompleteTasks, 10000)
+    const reminderInterval = setInterval(checkIncompleteTasks, 1 * 60 * 60 * 1000)
 
-    // Set interval to check every 1 hour (3600000 ms)
-    const reminderInterval = setInterval(() => {
-      checkIncompleteTasks()
-    }, 1 * 60 * 60 * 1000)
-
-    // Cleanup
     return () => {
       clearTimeout(initialTimeout)
       clearInterval(reminderInterval)
     }
-  }, [allTasks])
+  }, [allTasks.length]) // Only re-run when task count changes, not on every task update
 
-  const fetchTaskStats = async () => {
+  const fetchTaskStats = useCallback(async () => {
     try {
       const response = await getTaskStats()
-      // Handle both online (response.success) and offline (response.offline) formats
       if (response.success || response.offline) {
         const stats = response.stats
-        // Map stats to expected format
         setTaskStats({
           totalTasks: stats.total || stats.totalTasks || 0,
           completedTasks: stats.completed || stats.completedTasks || 0,
@@ -151,7 +133,6 @@ export default function DashBoard({ theme, toggleTheme }) {
       }
     } catch (error) {
       console.error('Error fetching task stats:', error)
-      // Set default stats on error
       setTaskStats({
         totalTasks: 0,
         completedTasks: 0,
@@ -160,12 +141,11 @@ export default function DashBoard({ theme, toggleTheme }) {
         weeklyHours: 0,
       })
     }
-  }
+  }, [])
 
-  const fetchAllTasks = async () => {
+  const fetchAllTasks = useCallback(async () => {
     try {
       const response = await getAllTasks()
-      // Handle both online (response.success) and offline (response.offline) formats
       if (response.success || response.offline) {
         setAllTasks(response.tasks || [])
       }
@@ -173,9 +153,9 @@ export default function DashBoard({ theme, toggleTheme }) {
       console.error('Error fetching all tasks:', error)
       setAllTasks([])
     }
-  }
+  }, [])
 
-  const fetchWeeklyTasks = async () => {
+  const fetchWeeklyTasks = useCallback(async () => {
     try {
       const weekDates = getWeekDates(weekOffset)
       const startDate = weekDates[0]
@@ -183,7 +163,6 @@ export default function DashBoard({ theme, toggleTheme }) {
       endDate.setHours(23, 59, 59, 999)
 
       const response = await getTasksByDateRange(startDate, endDate)
-      // Handle both online (response.success) and offline (response.offline) formats
       if (response.success || response.offline) {
         setWeeklyTasks(response.tasks || [])
       }
@@ -191,9 +170,9 @@ export default function DashBoard({ theme, toggleTheme }) {
       console.error('Error fetching weekly tasks:', error)
       setWeeklyTasks([])
     }
-  }
+  }, [weekOffset])
 
-  const handleCreateTask = async (e) => {
+  const handleCreateTask = useCallback(async (e) => {
     e.preventDefault()
     
     if (!taskForm.taskName.trim()) {
@@ -203,7 +182,6 @@ export default function DashBoard({ theme, toggleTheme }) {
 
     try {
       const response = await createTask(taskForm)
-      // Handle both online (response.success) and offline (response.offline) formats
       if (response.success || response.offline || response.task) {
         alert('Task created successfully!')
         setShowTaskModal(false)
@@ -215,7 +193,6 @@ export default function DashBoard({ theme, toggleTheme }) {
           notes: '',
           date: new Date().toISOString().split('T')[0],
         })
-        // Refresh data
         fetchTaskStats()
         fetchWeeklyTasks()
         fetchAllTasks()
@@ -223,14 +200,12 @@ export default function DashBoard({ theme, toggleTheme }) {
     } catch (error) {
       alert('Error creating task: ' + error.message)
     }
-  }
+  }, [taskForm, fetchTaskStats, fetchWeeklyTasks, fetchAllTasks])
 
-  const handleToggleComplete = async (taskId, currentStatus) => {
+  const handleToggleComplete = useCallback(async (taskId, currentStatus) => {
     try {
       const response = await updateTask(taskId, { completed: !currentStatus })
-      // Handle both online (response.success) and offline (response.offline) formats
       if (response.success || response.offline || response.task) {
-        // Refresh data
         fetchTaskStats()
         fetchWeeklyTasks()
         fetchAllTasks()
@@ -238,19 +213,17 @@ export default function DashBoard({ theme, toggleTheme }) {
     } catch (error) {
       alert('Error updating task: ' + error.message)
     }
-  }
+  }, [fetchTaskStats, fetchWeeklyTasks, fetchAllTasks])
 
-  const handleDeleteTask = async (taskId) => {
+  const handleDeleteTask = useCallback(async (taskId) => {
     if (!confirm('Are you sure you want to delete this task?')) {
       return
     }
 
     try {
       const response = await deleteTask(taskId)
-      // Handle both online (response.success) and offline (response.offline) formats
       if (response.success || response.offline || response.message) {
         alert('Task deleted successfully!')
-        // Refresh data
         fetchTaskStats()
         fetchWeeklyTasks()
         fetchAllTasks()
@@ -258,7 +231,7 @@ export default function DashBoard({ theme, toggleTheme }) {
     } catch (error) {
       alert('Error deleting task: ' + error.message)
     }
-  }
+  }, [fetchTaskStats, fetchWeeklyTasks, fetchAllTasks])
 
   const handleDayClick = (date) => {
     setSelectedDate(date)

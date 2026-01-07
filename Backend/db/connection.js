@@ -95,7 +95,7 @@ const saveDB = () => {
   }
 };
 
-// Auto-save database every 5 seconds if there are changes
+// Auto-save database every 30 seconds (optimized for performance)
 let autoSaveInterval;
 const startAutoSave = () => {
   autoSaveInterval = setInterval(() => {
@@ -104,7 +104,7 @@ const startAutoSave = () => {
     } catch (error) {
       console.error('Auto-save error:', error.message);
     }
-  }, 5000);
+  }, 30000); // Changed from 5000 to 30000 (30 seconds)
 };
 
 const closeDB = () => {

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
 import { authAPI, getUser, getToken, isAuthenticated } from '../services/authService';
 
 // Create Auth Context
@@ -114,16 +114,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const value = {
-    user,
-    token,
-    loading,
-    error,
-    login,
-    signup,
-    logout,
-    isAuthenticated: isAuthenticated(),
-  };
+  // Memoize context value to prevent unnecessary re-renders
+  const value = useMemo(
+    () => ({
+      user,
+      token,
+      loading,
+      error,
+      login,
+      signup,
+      logout,
+      isAuthenticated: isAuthenticated(),
+    }),
+    [user, token, loading, error]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

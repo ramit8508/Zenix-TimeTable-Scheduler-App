@@ -2,6 +2,27 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const API_URL = `${API_BASE_URL}/tasks`;
 
+// Simple cache to reduce API calls
+const cache = {
+  data: null,
+  timestamp: null,
+  ttl: 5000, // Cache for 5 seconds
+};
+
+const isCacheValid = () => {
+  return cache.data && cache.timestamp && (Date.now() - cache.timestamp < cache.ttl);
+};
+
+const updateCache = (data) => {
+  cache.data = data;
+  cache.timestamp = Date.now();
+};
+
+const clearCache = () => {
+  cache.data = null;
+  cache.timestamp = null;
+};
+
 // Check if online
 const isOnline = () => navigator.onLine;
 
@@ -32,6 +53,8 @@ const getHeaders = () => {
 // Create a new task
 export const createTask = async (taskData) => {
   try {
+    clearCache(); // Clear cache on create
+
     // OFFLINE MODE: Save task locally
     if (!isOnline()) {
       const tasks = getOfflineTasks();
@@ -84,10 +107,17 @@ export const createTask = async (taskData) => {
 // Get all tasks
 export const getAllTasks = async () => {
   try {
+    // Return cached data if valid
+    if (isCacheValid()) {
+      return cache.data;
+    }
+
     // OFFLINE MODE: Get tasks from localStorage
     if (!isOnline()) {
       const tasks = getOfflineTasks();
-      return { tasks, offline: true };
+      const result = { tasks, offline: true };
+      updateCache(result);
+      return result;
     }
     
     // ONLINE MODE: Try backend API, fallback to offline on error
@@ -103,16 +133,21 @@ export const getAllTasks = async () => {
         throw new Error(data.message || 'Failed to fetch tasks');
       }
 
+      updateCache(data);
       return data;
     } catch (networkError) {
       // Backend unreachable, use offline mode silently
       const tasks = getOfflineTasks();
-      return { tasks, offline: true };
+      const result = { tasks, offline: true };
+      updateCache(result);
+      return result;
     }
   } catch (error) {
     // Return offline data instead of throwing
     const tasks = getOfflineTasks();
-    return { tasks, offline: true };
+    const result = { tasks, offline: true };
+    updateCache(result);
+    return result;
   }
 };
 
@@ -388,6 +423,8 @@ export const getTasksByDateRange = async (startDate, endDate) => {
 // Update a task
 export const updateTask = async (taskId, updates) => {
   try {
+    clearCache(); // Clear cache on update
+
     // OFFLINE MODE: Update task in localStorage
     if (!isOnline()) {
       const tasks = getOfflineTasks();
@@ -442,6 +479,8 @@ export const updateTask = async (taskId, updates) => {
 // Delete a task
 export const deleteTask = async (taskId) => {
   try {
+    clearCache(); // Clear cache on delete
+
     // OFFLINE MODE: Delete task from localStorage
     if (!isOnline()) {
       const tasks = getOfflineTasks();

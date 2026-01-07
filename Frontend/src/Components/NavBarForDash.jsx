@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, memo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../../Assets/Logo.jpg'
@@ -7,23 +7,27 @@ import { FiChevronDown } from 'react-icons/fi'
 import { MdDashboard, MdLogout } from 'react-icons/md'
 import '../Styles/NavBarForDash.css'
 
-export default function NavBarForDash({ theme, toggleTheme }) {
+const NavBarForDash = memo(({ theme, toggleTheme }) => {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       setDropdownOpen(false)
       await logout()
       navigate('/')
     } catch (error) {
       console.error('Logout failed:', error)
-      // Navigate anyway to clear the UI
       navigate('/')
     }
-  }
+  }, [logout, navigate])
+
+  const handleDashboard = useCallback(() => {
+    setDropdownOpen(false)
+    navigate('/dashboard')
+  }, [navigate])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -41,11 +45,6 @@ export default function NavBarForDash({ theme, toggleTheme }) {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [dropdownOpen])
-
-  const handleDashboard = () => {
-    setDropdownOpen(false)
-    navigate('/dashboard')
-  }
 
   // Get initials from user name
   const getInitials = (name) => {
@@ -114,4 +113,8 @@ export default function NavBarForDash({ theme, toggleTheme }) {
     </nav>
     </>
   )
-}
+})
+
+NavBarForDash.displayName = 'NavBarForDash'
+
+export default NavBarForDash

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { FiX, FiCalendar, FiTarget, FiClock, FiTrendingUp, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { MdAutoAwesome } from 'react-icons/md';
 import '../Styles/AIPlanGenerator.css';
 
-export default function AIPlanGenerator({ isOpen, onClose, activeTasks, onPlanGenerated }) {
+const AIPlanGenerator = memo(({ isOpen, onClose, activeTasks, onPlanGenerated }) => {
   const [formData, setFormData] = useState({
     availableHours: 6,
     startTime: '09:00',
@@ -28,24 +28,24 @@ export default function AIPlanGenerator({ isOpen, onClose, activeTasks, onPlanGe
     'Creative Projects'
   ];
 
-  const handleGoalToggle = (goal) => {
+  const handleGoalToggle = useCallback((goal) => {
     setFormData(prev => ({
       ...prev,
       goals: prev.goals.includes(goal)
         ? prev.goals.filter(g => g !== goal)
         : [...prev.goals, goal]
     }));
-  };
+  }, []);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }, []);
 
-  const addCustomTask = () => {
+  const addCustomTask = useCallback(() => {
     if (newTaskName.trim()) {
       setFormData(prev => ({
         ...prev,
@@ -53,20 +53,20 @@ export default function AIPlanGenerator({ isOpen, onClose, activeTasks, onPlanGe
       }));
       setNewTaskName('');
     }
-  };
+  }, [newTaskName]);
 
-  const removeCustomTask = (index) => {
+  const removeCustomTask = useCallback((index) => {
     setFormData(prev => ({
       ...prev,
       customTasks: prev.customTasks.filter((_, i) => i !== index)
     }));
-  };
+  }, []);
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = useCallback((e) => {
     if (e.key === 'Enter') {
       addCustomTask();
     }
-  };
+  }, [addCustomTask]);
 
   const generatePlan = async () => {
     if (formData.goals.length === 0 && formData.customTasks.length === 0) {
@@ -394,4 +394,8 @@ export default function AIPlanGenerator({ isOpen, onClose, activeTasks, onPlanGe
       </div>
     </div>
   );
-}
+});
+
+AIPlanGenerator.displayName = 'AIPlanGenerator';
+
+export default AIPlanGenerator;

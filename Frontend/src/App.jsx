@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ProtectedRoute } from './Components/ProtectedRoute'
 import OfflineIndicator from './Components/OfflineIndicator'
-import StartingPage from './Pages/StartingPage'
-import Login from './Pages/Login'
-import Signup from './Pages/Signup'
-import DashBoard from './Pages/DashBoard'
+
+// Lazy load pages for better performance
+const StartingPage = lazy(() => import('./Pages/StartingPage'))
+const Login = lazy(() => import('./Pages/Login'))
+const Signup = lazy(() => import('./Pages/Signup'))
+const DashBoard = lazy(() => import('./Pages/DashBoard'))
 
 function AppContent() {
   const [theme, setTheme] = useState('dark')
@@ -30,21 +32,28 @@ function AppContent() {
   }
   
   return (
-    <Routes>
-      <Route path="/" element={<StartingPage theme={theme} toggleTheme={toggleTheme} />} />
-      <Route 
-        path="/login" 
-        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login theme={theme} toggleTheme={toggleTheme} />} 
-      />
-      <Route 
-        path="/signup" 
-        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Signup theme={theme} toggleTheme={toggleTheme} />} 
-      />
-      <Route 
-        path="/dashboard" 
-        element={<ProtectedRoute element={<DashBoard theme={theme} toggleTheme={toggleTheme} />} />} 
-      />
-    </Routes>
+    <Suspense fallback={
+      <div className="loading-screen">
+        <div className="loading-spinner"></div>
+        <div className="loading-text">Loading...</div>
+      </div>
+    }>
+      <Routes>
+        <Route path="/" element={<StartingPage theme={theme} toggleTheme={toggleTheme} />} />
+        <Route 
+          path="/login" 
+          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login theme={theme} toggleTheme={toggleTheme} />} 
+        />
+        <Route 
+          path="/signup" 
+          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Signup theme={theme} toggleTheme={toggleTheme} />} 
+        />
+        <Route 
+          path="/dashboard" 
+          element={<ProtectedRoute element={<DashBoard theme={theme} toggleTheme={toggleTheme} />} />} 
+        />
+      </Routes>
+    </Suspense>
   )
 }
 
