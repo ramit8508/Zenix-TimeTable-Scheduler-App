@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../../Assets/Logo.jpg'
@@ -11,12 +11,36 @@ export default function NavBarForDash({ theme, toggleTheme }) {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null)
 
   const handleLogout = async () => {
-    await logout()
-    setDropdownOpen(false)
-    navigate('/')
+    try {
+      setDropdownOpen(false)
+      await logout()
+      navigate('/')
+    } catch (error) {
+      console.error('Logout failed:', error)
+      // Navigate anyway to clear the UI
+      navigate('/')
+    }
   }
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false)
+      }
+    }
+
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [dropdownOpen])
 
   const handleDashboard = () => {
     setDropdownOpen(false)
@@ -48,7 +72,7 @@ export default function NavBarForDash({ theme, toggleTheme }) {
         </button>
 
         {user && (
-          <div className="user-menu">
+          <div className="user-menu" ref={dropdownRef}>
             <button 
               className="user-btn" 
               onClick={() => setDropdownOpen(!dropdownOpen)}
