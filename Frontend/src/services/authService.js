@@ -4,6 +4,27 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 // Check if online
 const isOnline = () => navigator.onLine;
 
+// Check if server is actually reachable
+const isServerReachable = async () => {
+  if (!navigator.onLine) return false;
+  
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+    
+    const response = await fetch(`${API_BASE_URL}/auth/health`, {
+      method: 'GET',
+      signal: controller.signal,
+      cache: 'no-cache'
+    });
+    
+    clearTimeout(timeoutId);
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+};
+
 // Get offline users database
 const getOfflineUsers = () => {
   const users = localStorage.getItem('offline_users');
@@ -18,44 +39,50 @@ const saveOfflineUsers = (users) => {
 export const authAPI = {
   // Signup
   signup: async (name, email, password, confirmPassword) => {
-    try {
+    // Validate passwords match first
+    if (password !== confirmPassword) {
+      throw new Error('Passwords do not match');
+    }
+
+    // Check if we should use offline mode
+    const serverReachable = await isServerReachable();
+    
+    if (!serverReachable) {
       // OFFLINE MODE: Handle signup locally
-      if (!isOnline()) {
-        const offlineUsers = getOfflineUsers();
-        
-        // Check if user already exists
-        if (offlineUsers.find(u => u.email === email)) {
-          throw new Error('User already exists');
-        }
-        
-        // Validate passwords match
-        if (password !== confirmPassword) {
-          throw new Error('Passwords do not match');
-        }
-        
-        // Create new user
-        const newUser = {
-          id: Date.now().toString(),
-          name,
-          email,
-          password, // In production, this should be hashed
-          createdAt: new Date().toISOString(),
-        };
-        
-        offlineUsers.push(newUser);
-        saveOfflineUsers(offlineUsers);
-        
-        // Generate offline token
-        const token = 'offline_' + Date.now();
-        const userData = { id: newUser.id, name: newUser.name, email: newUser.email };
-        
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(userData));
-        
-        return { token, user: userData, offline: true };
+      const offlineUsers = getOfflineUsers();
+      
+      // Check if user already exists
+      if (offlineUsers.find(u => u.email === email)) {
+        throw new Error('User already exists');
       }
       
-      // ONLINE MODE: Use backend API
+      // Create new user
+      const newUser = {
+        id: Date.now().toString(),
+        name,
+        email,
+        password, // In production, this should be hashed
+        createdAt: new Date().toISOString(),
+      };
+      
+      offlineUsers.push(newUser);
+      saveOfflineUsers(offlineUsers);
+      
+      // Generate offline token
+      const token = 'offline_' + Date.now();
+      const userData = { id: newUser.id, name: newUser.name, email: newUser.email };
+      
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      
+      return { token, user: userData, offline: true };
+    }
+    
+    // ONLINE MODE: Use backend API
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: {
@@ -67,8 +94,10 @@ export const authAPI = {
           password,
           confirmPassword,
         }),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
       const data = await response.json();
 
       if (!response.ok) {
@@ -83,6 +112,11 @@ export const authAPI = {
 
       return data;
     } catch (error) {
+      // If network error, fallback to offline mode
+      if (error.name === 'AbortError' || error.message.includes('fetch')) {
+        console.log('Server unreachable, using offline mode');
+        return await authAPI.signup(name, email, password, confirmPassword);
+      }
       console.error('Signup error:', error);
       throw error;
     }
@@ -90,27 +124,33 @@ export const authAPI = {
 
   // Login
   login: async (email, password) => {
-    try {
+    // Check if we should use offline mode
+    const serverReachable = await isServerReachable();
+    
+    if (!serverReachable) {
       // OFFLINE MODE: Handle login locally
-      if (!isOnline()) {
-        const offlineUsers = getOfflineUsers();
-        const user = offlineUsers.find(u => u.email === email && u.password === password);
-        
-        if (!user) {
-          throw new Error('Invalid email or password');
-        }
-        
-        // Generate offline token
-        const token = 'offline_' + Date.now();
-        const userData = { id: user.id, name: user.name, email: user.email };
-        
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(userData));
-        
-        return { token, user: userData, offline: true };
+      const offlineUsers = getOfflineUsers();
+      const user = offlineUsers.find(u => u.email === email && u.password === password);
+      
+      if (!user) {
+        throw new Error('Invalid email or password');
       }
       
-      // ONLINE MODE: Use backend API
+      // Generate offline token
+      const token = 'offline_' + Date.now();
+      const userData = { id: user.id, name: user.name, email: user.email };
+      
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      
+      return { token, user: userData, offline: true };
+    }
+    
+    // ONLINE MODE: Use backend API
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -120,8 +160,10 @@ export const authAPI = {
           email,
           password,
         }),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
       const data = await response.json();
 
       if (!response.ok) {
@@ -136,6 +178,11 @@ export const authAPI = {
 
       return data;
     } catch (error) {
+      // If network error, fallback to offline mode
+      if (error.name === 'AbortError' || error.message.includes('fetch')) {
+        console.log('Server unreachable, using offline mode');
+        return await authAPI.login(email, password);
+      }
       console.error('Login error:', error);
       throw error;
     }

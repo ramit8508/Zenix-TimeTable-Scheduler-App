@@ -28,6 +28,9 @@ const validateLogin = [
 ];
 
 // Routes
+router.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
 router.post('/signup', validateSignup, authController.signup);
 router.post('/login', validateLogin, authController.login);
 router.get('/me', auth, authController.getMe);

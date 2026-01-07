@@ -27,12 +27,18 @@ export const AuthProvider = ({ children }) => {
         }
         
         try {
-          // Validate token with backend only when online
+          // Validate token with backend only when online (with timeout)
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+          
           const response = await fetch('http://localhost:5000/api/auth/me', {
             headers: {
               'Authorization': `Bearer ${storedToken}`
-            }
+            },
+            signal: controller.signal,
           });
+          
+          clearTimeout(timeoutId);
           
           if (response.ok) {
             // Token is valid
@@ -45,8 +51,8 @@ export const AuthProvider = ({ children }) => {
             setUser(storedUser);
           }
         } catch (error) {
-          // Network error, use offline mode
-          console.log('Network error, using offline mode');
+          // Network error or timeout, use offline mode
+          console.log('Network error or timeout, using offline mode');
           setToken(storedToken);
           setUser(storedUser);
         }
