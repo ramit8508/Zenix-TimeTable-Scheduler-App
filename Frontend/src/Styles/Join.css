@@ -1,0 +1,266 @@
+.join-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 20px;
+    background-color: var(--bg-primary);
+    transition: background-color 0.3s ease;
+}
+
+.box-join{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 80px;
+    background: linear-gradient(135deg, rgba(88, 48, 35, 0.3) 0%, rgba(42, 36, 52, 0.4) 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(249, 112, 21, 0.2);
+    max-width: 1200px;
+    width: 100%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.join-heading{
+    color: var(--text-primary);
+    font-size: 2.8rem;
+    margin: 0;
+    text-align: center;
+    font-weight: 600;
+    line-height: 1.2;
+    transition: color 0.3s ease;
+}
+
+.join-para{
+    color: var(--text-secondary);
+    font-size: 1.15rem;
+    margin: 0;
+    text-align: center;
+    max-width: 650px;
+    line-height: 1.6;
+    transition: color 0.3s ease;
+}
+
+.join-button{
+    background-color: #F97015;
+    color: #FFFFFF;
+    padding: 16px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(249, 112, 21, 0.3);
+}
+
+.join-button:hover{
+    background-color: #E65F0A;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(249, 112, 21, 0.4);
+}
+
+.join-button:active{
+    transform: translateY(0);
+}
+
+/* Responsive Design for Desktop, Tablets (iPad), and Phones */
+
+/* iPad Pro and Large Tablets (Landscape) */
+@media screen and (max-width: 1400px) {
+    .box-join {
+        max-width: 800px;
+        padding: 70px 50px;
+    }
+}
+
+/* Standard Desktop and iPad Pro (Portrait) */
+@media screen and (max-width: 1200px) {
+    .join-container {
+        padding: 70px 20px;
+    }
+    
+    .box-join {
+        padding: 65px 45px;
+    }
+    
+    .join-heading {
+        font-size: 2.5rem;
+    }
+}
+
+/* iPad Landscape (1024px) and Tablets */
+@media screen and (max-width: 1024px) {
+    .join-container {
+        padding: 60px 20px;
+    }
+    
+    .box-join {
+        padding: 60px 40px;
+        max-width: 700px;
+    }
+    
+    .join-heading {
+        font-size: 2.3rem;
+    }
+    
+    .join-para {
+        font-size: 1.1rem;
+    }
+}
+
+/* iPad Portrait (768px) and Medium Tablets */
+@media screen and (max-width: 992px) {
+    .join-container {
+        padding: 55px 18px;
+    }
+    
+    .box-join {
+        padding: 55px 38px;
+    }
+    
+    .join-heading {
+        font-size: 2.2rem;
+    }
+}
+
+/* iPad Mini Portrait and Small Tablets */
+@media screen and (max-width: 834px) {
+    .join-container {
+        padding: 50px 16px;
+    }
+    
+    .box-join {
+        padding: 50px 35px;
+    }
+    
+    .join-heading {
+        font-size: 2rem;
+    }
+    
+    .join-para {
+        font-size: 1.05rem;
+    }
+    
+    .join-button {
+        padding: 15px 36px;
+        font-size: 1.05rem;
+    }
+}
+
+/* Phones (Landscape) and Small Tablets */
+@media screen and (max-width: 768px) {
+    .join-container {
+        padding: 45px 15px;
+    }
+    
+    .box-join {
+        padding: 45px 30px;
+        gap: 20px;
+        border-radius: 16px;
+    }
+    
+    .join-heading {
+        font-size: 1.9rem;
+    }
+    
+    .join-para {
+        font-size: 1rem;
+        max-width: 100%;
+    }
+    
+    .join-button {
+        padding: 14px 32px;
+        font-size: 1rem;
+    }
+}
+
+/* Large Phones (iPhone Pro Max, Galaxy S series) */
+@media screen and (max-width: 640px) {
+    .join-container {
+        padding: 40px 12px;
+    }
+    
+    .box-join {
+        padding: 40px 25px;
+    }
+    
+    .join-heading {
+        font-size: 1.75rem;
+    }
+    
+    .join-para {
+        font-size: 0.98rem;
+    }
+}
+
+/* Standard Phones (iPhone 14, Galaxy, etc.) */
+@media screen and (max-width: 576px) {
+    .join-container {
+        padding: 35px 10px;
+    }
+    
+    .box-join {
+        padding: 35px 20px;
+        gap: 18px;
+    }
+    
+    .join-heading {
+        font-size: 1.6rem;
+    }
+    
+    .join-para {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
+    .join-button {
+        padding: 13px 28px;
+        font-size: 0.95rem;
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+/* Small Phones and Compact Displays */
+@media screen and (max-width: 480px) {
+    .join-container {
+        padding: 30px 8px;
+    }
+    
+    .box-join {
+        padding: 30px 18px;
+        border-radius: 12px;
+    }
+    
+    .join-heading {
+        font-size: 1.4rem;
+    }
+    
+    .join-para {
+        font-size: 0.9rem;
+    }
+    
+    .join-button {
+        padding: 12px 24px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Extra Small Phones */
+@media screen and (max-width: 375px) {
+    .join-heading {
+        font-size: 1.3rem;
+    }
+    
+    .join-para {
+        font-size: 0.85rem;
+    }
+    
+    .box-join {
+        padding: 25px 15px;
+    }
+}

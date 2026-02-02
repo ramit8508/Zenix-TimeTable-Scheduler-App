@@ -1,0 +1,12 @@
+# Environment variables
+.env
+*.env
+
+# Dependencies
+node_modules/
+
+# SQLite Database
+data/
+*.db
+*.sqlite
+*.sqlite3
